@@ -5,6 +5,10 @@ This is a public repository for my work on s4m-cycles.
 It is a work in progress only, nothing in here is guaranteed to work at any time, but maybe
 be useful to those building similar things or looking for examples of S4M code.
 
-See the docs directory for an overview.
+See the docs for an overview here: 
+https://iainctduncan.github.io/s4m-cycles/
+
+Hear a performance using the system here: 
+https://soundcloud.com/iain-duncan/improvisation-for-saxophone
 
 
