@@ -127,6 +127,15 @@ tracking, I could influence the algorithms and mix automation effectively
 with multiple streams based on the position of the mouthpeice and bell
 and their orientation to each other.
 
+Audio Controls 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Another area that I have not explored in this version is having the note material
+capture by the system change algorithmic parameter or system behaviour based
+on the notes themselves. For example, pitches within the last X pitches could be
+used to determine key centers, or measurements of the density of captured
+notes could be used to change texture.
+
+
 Pulse & Temporal Interplay
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 While the temporally free approach in this performance worked, I would also
@@ -145,6 +154,15 @@ pulse changes coming from onset detection and gestural controls.
 Additionally, the sequencers all use the same clock at present. 
 Interesting effects could be explored by allowing their clocks to diverge.
 
+Algorithmic Reworking of Audio
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In the present version, the captured lines are transformed and rendered on
+synthesizer patches that deliberately sound nothing like a saxophone. 
+While I don't want the system to sound like a conventional looper, 
+using the actual saxophone audio as the basis for electronically played material could be fruitful.
+This could include granulation of saxophone sounds, spectral transformations,
+or unusual stretching and delaying.
+
 Additional Performers 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Finally, I feel the system could be very rewarding to use with multiple players.
@@ -157,6 +175,10 @@ Additionaly players could also help one explore different temporal styles.
 The system can send out clock sources to others, and could be effective combined
 with traditional sequencing or improvisation within a clear metric grid.
 
+
+
+Granualtion etc
+]
 
 Conclusion
 ----------
