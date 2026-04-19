@@ -1,0 +1,26 @@
+(post "sax-tracker-tests.scm")
+
+(define (kpass cps rms)
+  (frq-in cps)
+  (rms-in rms))
+
+(set! debug 1)
+
+(begin
+  (kpass 239 0.01)
+  (kpass 240 0.02)
+  (kpass 241 0.51)
+  (kpass 242 0.51)
+  (kpass 243 0.51)
+  (kpass 244 0.51)
+  (kpass 245 0.51)
+  (kpass 246 0.51)
+  (kpass 247 0.51)
+  (kpass 248 0.51)
+  (kpass 249 0.51)
+  (kpass 250 0.51)
+  (kpass 251 0.71)
+  (kpass 252 0.51)
+  (kpass 253 0.51)
+  (kpass 254 0.51)
+)

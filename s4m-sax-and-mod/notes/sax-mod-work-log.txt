@@ -1,0 +1,176 @@
+2026-04-05
+- idea for legato:
+  - what if it just needs to only trigger if we are above db threshold and *not* in an onset?
+  - nope more complicated, using sax tracker 2 for show
+- testing the reducers
+- need to verify that the velocity to modular is working
+
+2026-04-04
+- working on the tracker
+- need to remove the bug from bad values
+- csound is sending a value -inf
+- need a way to not trigger notes twice when
+- leaving off for legato, going to be much more complicated
+- test it tomorrow with real horn
+
+2026-04-03
+- working on vel reading
+- TODO: make a startup routine that turns everything on correctly
+- should allow repeated notes in the capture maybe?
+- moved the sax tracker into a subpatch (its a singleton)
+- need to map rms val, from 0.1 to x? not sure what it's loudest is right now
+- added an rms buffer to get the mean, that's working ok
+- what it doesn't do is allow detecting change in pitch as a new note when there is no
+  sharp attack
+- could I have a separate process listening for legato notes?
+- oops: my logic is screwy because ableton is not sending a value every ksmp, is out of sync,
+- tryin g with convert to db from csound,
+  - with csound adding 90 to the signal, I'm getting a min of 40 and a peak of 80
+- left off tuning the db and threshold
+
+2026-04-02
+- adding launch pad prob reducers
+- got it working, added launchpads to the midi input, got them controlling probability
+- really only need the left pad, could use right pad for something else.
+- set up is pad buttons are on top instead of bottom (easier to not hit accidentally with feet)
+
+2026-04-01
+- how to make something that allows me to more rapidly thin things out
+- going to add a setting for each track and each note, which is odds of playing
+  - it will be odds from 0 to 7/7 out of playing
+- added test-odds function to mod-template-helpers
+  (test-odds 0 10) - always will be 0
+  (test-odds 10 10) - always will be true
+  - in the middle, random chance
+- added call to test-odds to run-step to throttle notes
+  uses :odds and :odds-denom
+- idea is the launchpad foot control will be used to set the odds on the fly
+
+
+2026-03-26
+- working on playable version
+- each take will rotate the seq num
+- Next try having the number of drop ins go up slowly within the algo
+- can I get click to my ears only?
+a global control for how much note goes into the algos would be good, with 
+the expression pedal
+
+
+2026-03-24
+- working on good transformation presetsclear
+- added flag run-algo-on-take-end
+- the die-off doesn't seem to be working
+- havin the minus note reps would allow things to come in slowly
+- sort of working, need more algos that do less I think
+  and easy way to switch 
+  - stretch seems fucked
+- reverse die off would def help to fade in algo additions
+- add range controls (drop octave?)
+- not sure if replace is doing the right thing?
+  - seems to choke notes when I try to play over other stuff
+- I think some of my oscillators aren't tracking right either, high is fucked
+- taking it to slowly more non-tonal works well
+
+
+2026-03-21
+- goal, finish reflection
+- could also try a shuffle transform? just shuffle the pitches of the line?
+- reflection seems to be working
+- added transform tfm-shuffle-pitches
+- added a flag for whether drop in repeats also run the transform separately for each one
+- TOD add option to drop in on track with previous track clear
+- NB: setting reps has to happen BEFORE recording take
+- could have a command to fade out everything on a existing track bit by bit
+  - it could got through all notes on the track assigning random value from 1 to X for reps
+  
+- make and test reflection transform
+- I think loop length should be global to all seqs for now
+- added set-loop-len-all
+- adding opp:die off takes max number of reps and sets value from 0 to max
+- reflection, and then we need to play music
+  - need to be able to set the reflection point
+  - shelving reflection, not working with some values when step result is negative
+- added ops take-in and take-in now that use unaltered takes
+
+- next thing is to come up with some transform presets that sound good 
+
+
+- XXX: bug if take pedal held down too long and wraps around
+
+2026-03-20
+- GOAL get to the point of playing improvisations
+- recording modes seem to all work 
+- fixed the tuning routine
+- create diatonic transpositions
+- add delay transform for drop in copies
+  - takes time and number of reps
+- added on drop in echos, added :drop-in-reps and :drop-in-delay
+  - working, and if transform source is last transform, it retransforms
+  - TODO: how to set the number of echoes and the echo delay
+- by using the echoes I should be able to just leave all loop times
+  on 8 bars or something (I hope)
+- Next thing is the diatonic transpose and inversion
+  - once I have that in with some randomization, I think time to work on playing
+- need to add back in grandmother and hybrid synths
+
+- got transpose working, created test suite in test-mod-template-helpers.scm
+
+- should prob rewrite later to be handle octaves in teh conversion routine
+  by taking step and oct as args
+
+- got reflection working for simple cases, prob will bust with ranges
+- NEXT: tests for reflection with ranges adn fix that
+
+2026-03-19
+- get the pedal wiping version going and recording to notrack
+- call that pedal mode: blend, replace, capture
+- let's track takes with a take counter and put them in the notes
+- fixing note object logic to allo;w a;rbitrary list of ht attrs
+  throughou, in order to be able to store the take number in them
+- added record modes: 'blend 'replace 'capture
+- added toggle for whether notes get played all the time
+
+- replace is broken again, WTF
+- still debugging the above
+- busted dropping in takes with the note refactor
+- left off making hash-table clone
+
+2026-03-18
+- goal: note repeats and diatonic transformations
+- added bottom button doing note repeats (turned off the beat offset thing
+- I think transforms shold get added automatically
+- could have it so that the transform is run when we punch in
+- added flag :drop-in-source 'last-take or 'last-transform
+- dropping in from both is working, chosen from fire pattern button
+- added reps for the drop ins and playing
+- Reversals: - using grid button for direction
+- added in the die off feature
+- TODO: fix bug in stretch code, sometimes making negative 
+- TODO: get this into a repo FFS
+
+
+2026-03-17
+- porting copy of my s4m-live-code midi input handling over sop the system is consistent
+- integrated the s4m-live-code midi input system, have a controller called improv
+- can now use generic messages from the two launchpads and the fire
+- pedal not doing anything yo
+- left off stepping through the ops
+- need wiping badly
+- got drop-in-at working with bottom btns providing time offsets
+- I think the last take should be kept nondestructively so we can
+  do transforms to it, drop them in and then still go back to it
+- should also be able to capture a take without it necessarily going on the current
+  seq (just into the take buffer)
+- I need to be able work on the line in the transform-buffer (:last-transform)
+- should have option to keep transforming last version or go from a take  
+- got the notes being transformed
+  - but the stretch transform is producing some negative time values
+- not really sure about the having to put in the transform manually
+  - worth having a toggle for automatic version too I think, can remember where last settings
+    were and just do it
+- Next: implement the number of notes playing 
+
+
+2026-03-15
+- goal to add some delay transforms
+- added takes with the pedal

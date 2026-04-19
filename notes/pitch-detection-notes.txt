@@ -1,0 +1,51 @@
+Pitch detection notes from George
+
+- start with the DFT based one
+  - signal needs to be processed in short time windows
+ - George recommends getting the plumbing in place by doing amplitude estimatefirst
+ - get four 64 samples into a 256 sample widow
+ - do RMS amplitude estimate on it, and get that 
+- next step is to do with DFT
+
+Step 3:
+- autocorrelation detecter,
+  - computation costly
+- so there is a fast way of doing autocorrelation that we did not cover in the course
+
+Notes from George call:
+Things to try
+- quantizing pitch to courser bins
+- can use delta of estimated frequency for determining on note
+- the threshold for onsets can be adaptive
+
+- can look at the square root of the delta
+- or ratio of this window to the previous one to threshold
+
+- definitely keep a ring buffer
+- average is not the best way to do it because outlier will throw it off
+- media filter, sort values, keep middle value (not interpolated)
+  - so you know its a detected a pitch
+  - median needs an odd number of samples
+- another approach is a histogram approaches
+  - turn detection into midi notes and build histogram
+- reset the array on every onset
+- and then the take the arg max (the index of the highest one)
+
+- whatever I do 
+ - check that non real time mode and real time mode to see if they match
+ - could get bad nonsense because of an underrun
+- George suggests 7 to 15,
+- 7 would be about a 10ms delay
+- could ignore the first few after the onset
+
+- try the median first
+- have to sort seven numbers
+
+
+****************************************************************************************************
+My implementation notes:
+- rms onset detection mostly working, still get doubled notes sometimes
+
+
+
+

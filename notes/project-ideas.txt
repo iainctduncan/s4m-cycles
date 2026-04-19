@@ -1,0 +1,15 @@
+Idea for project
+
+- system can pick up a line from the horn, pedal down and it gets recorded
+- once it goes in, it gets turned into a symbolic representation
+- this can be transformed temporally (augmentation etc)
+- additionally we can have a chord progression, and the line can be reharmonized 
+  according to the chord progression using CSP rules
+  
+
+Thoughts from Sarah
+- she needs less than one things in data
+- make the thresholds something we can vary in real time
+- this could allow only loud notes to come in
+
+

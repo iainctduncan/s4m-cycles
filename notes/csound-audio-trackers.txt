@@ -1,0 +1,5 @@
+Notes on amp and pitch tracking in csound
+
+- amp tracking opcodes are rms, follow, and follow2
+
+

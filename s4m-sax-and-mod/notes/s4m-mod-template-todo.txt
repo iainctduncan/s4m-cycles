@@ -1,0 +1,78 @@
+TODO on the modular template
+
+- get amp input working properly
+
+- way to switch the seq quickly
+- way to swith the seq loop len quickly
+
+- experiment with some processes around input lines
+
+- get all synths going
+
+- could also have multiple sequencers pointing to the same channel
+- erase note?
+
+- need a way to do legato notes
+- some way for it to know about chords for scheduled notes
+- hook up fader box to the volumes and delay in ableton?
+- undo last take
+
+
+Issues:
+- something wrong in setting loop len
+
+
+Next: 
+- pick sequencer button
+- install plugins so we can see if can be cool with just sound sculpture
+- change loop len for each??
+- some kind of process that repeats things with a transform
+
+- priorities
+- change loop length of sequencer quickly
+- self scheduling of notes with a lifecycle of repeats 
+- chord based knowledge
+- tuning?
+
+- add way to pull down amp when dropping take? maybe pitchbend
+- could use second key step for on the fly transposition too
+
+Ops we need:
+- set loop offset - later
+- drop in now - working properly
+- drop in at - working but only allows putting on top of the bar
+
+- option for when pedal is down on take all notes in the time for the selected track are wiped
+  (record wipe instead of record blend)
+- option for when pedal is down, we are recording a take but not altering an existing seq
+- this could be used to clear track space with the pedal too
+s
+Issues:
+
+
+GOAL get to the point of playing improvisations
+- make sure all recording modes work
+- create diatonic transpositions
+- add delay transform for drop in copies
+  - takes time and number of reps
+- experiment with automating the set of transforms 
+  so that I just play and pick targets
+  
+
+TODO: for dress rehearsal
+- get 8 voices going
+- get some transforms going that fill enough material
+
+- TODO could have a command to fade out everything on a existing track bit by bit
+  - it could got through all notes on the track assigning random value from 1 to X for reps
+
+- TODO: allow bringing lines back in gradually - can have them go down to zero without 
+  necessarily erasing
+
+Priorities:
+- adding velocity reading
+- adding velocity uses in the transforms
+- a way to thin things out
+
+
+

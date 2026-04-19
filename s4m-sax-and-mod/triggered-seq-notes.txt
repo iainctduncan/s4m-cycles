@@ -1,0 +1,32 @@
+Notes on the triggeres sequencer for use with the sax
+
+- for simplicty let's assume there is no notion of duration
+  - triggeres percussive/fixed dur sounds only
+
+- good if it's not quantized to pick up sensitive timing
+
+- sequencer needs some notion of ticks
+
+
+- it will run in a loop and when it gets a note, add to the sequence
+  - possibly replacing other notes at the same tick, by some 
+
+- simple solution would be that we store a tick value in a hash-table
+  
+- it should use a clock instead of multiple delay calls I guess?
+
+- for trigger seq, let's make notes be hash-tables, and they can be compatible 
+  easily with the csp solver that way
+- seems like durs are weird
+  - not sure why notes are getting cut out
+  - I guess because gate is firing every time, should fix that
+  
+    
+- clocking all seqs off one max clock seems to work fine for running many seqs  
+
+
+- hook up some csound notes
+
+-
+
+

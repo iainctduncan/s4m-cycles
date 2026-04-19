@@ -1,0 +1,36 @@
+Log:
+2026-03-04
+- working on the synth setup
+
+
+2026-03-03
+- tested it with saxophone, working ok, does a lot of octave jumps
+- next is getting sequencer going
+- I think I can copy the s4m-markov as the starting template
+
+2026-03-01
+- switched debouncing over to a ksmp counter
+  - this is independent of the onset counter
+- next, record a sax clip and use it to test this with a saxophone
+- seems like pll track is not a good one for horn type sounds
+- I think the issue is I'm still grabbing too much from the noisy beginning
+- to try: put in a counter that only starts filling the ringbuf
+- swtiched it to ableton's detector which works better for now
+  - can try other Csound ones to figure this out later
+- I put in a repeated note filter, but that's not right either,
+  TODO: it should filter out repeated notes under a threshold of time
+
+2026-02-25
+- working on pitch tracking
+- implemented a ringbuf with median sorting
+- TODO: the debounce should count ksmps instead of going on time
+  so we can write proper tests
+
+2026-02-24
+- working on note tracker maxpatch
+- onset detection is ok for new notes
+- next get cps tracking added 
+- added sending cps into s4m, but it seems to be all
+  over the map, grabbing the current pitch from last value
+  when trigger runs appears not to work well
+

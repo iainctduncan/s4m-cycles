@@ -1,0 +1,8 @@
+Future work
+
+- duration
+- other players
+- gestural control with saxophone
+- legato tracking
+- more dynamic range
+- pulse tracking

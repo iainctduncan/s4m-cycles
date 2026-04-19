@@ -1,0 +1,19 @@
+Notes on the s4m-modular-template
+
+- working on a template for driving the modulars the way I did for the bell comp
+
+- got the files cleaned up for a modular template version based on bell comp files
+
+- next, get it playing the modulars
+
+
+- let's have the notes have a counter on them so they only play a certain number of times
+
+
+Reflection:
+
+- get difference between note as a scale step and reflection point as a scale step
+  - get from the reflection point to the subject note
+  - get the scale step from going the other way from the reflection (negate it)
+  - convert scale step back to a note
+

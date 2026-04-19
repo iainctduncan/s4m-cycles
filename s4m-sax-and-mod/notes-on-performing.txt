@@ -1,0 +1,10 @@
+Performing notes
+
+Issues:
+- the dixie on 5 is not tracking properly, could swap it out?
+
+Transform to try
+
+Trying:
+- we stay always on capture
+- 

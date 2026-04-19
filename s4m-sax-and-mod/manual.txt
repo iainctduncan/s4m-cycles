@@ -1,0 +1,16 @@
+Manual for the system:
+
+- Launchpad left chooses destination track
+- LP right buttons choos operation
+   0  'set-loop-len
+   1  'set-loop-top
+   2  'drop-in-now
+   3  'drop-in-at
+   4  
+   5  
+   6  
+   7  'clear
+- LP bottom buttons choose beat offset for dropping in at time
+
+- fire pattern buttons choose trasnform take source
+  - top is 'last-take, bottom is 'last-transform

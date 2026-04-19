@@ -1,0 +1,47 @@
+notes on the delayed transforms
+
+- when the pedal goes up, the take is over
+
+- left off making drop-in-transform
+
+- TODO fix the saving thing!!
+- its not saving to github, ffs
+
+Transforming:
+- will use the fire and second keystep for transforming
+
+- augment/diminish
+- transpose
+- reflect/invert
+- I think shift in time by sixteenth
+
+
+ ; transform factors controlled by the fire buttons
+  :stretch 1
+  :c-transpose 7
+  :d-transpose 0
+  :invert 0
+
+
+Workflow idea:
+- fire sets the current transform setting, which runs over the take buffer
+- a copy of which is made on punch time, leaving the buffer alone
+- can have toggle switch: transform on drop-in
+
+- current number button can control number of note reps for the drop at
+
+- the transform will run on drop time, transforming the last take (not transform)
+
+- have a flag for choosing whether we do drop ins from the last-take or the last-transform
+
+Priorities:
+
+- letting lines die out one note at a time (shuffle the reps)
+- diatonic transpose
+- inversion
+- repetition done
+- reversal done
+- odds of playing? allow each note an X odds of playing
+
+
+- option for take not to be sent to a sequence while recording
