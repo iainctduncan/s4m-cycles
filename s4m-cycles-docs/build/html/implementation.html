@@ -44,33 +44,32 @@
 <h1>Implementation Notes<a class="headerlink" href="#implementation-notes" title="Link to this heading">¶</a></h1>
 <section id="tracker">
 <h2>Tracker<a class="headerlink" href="#tracker" title="Link to this heading">¶</a></h2>
-<p>The tracker component receives audio input outputs note events to the sequencer layer.
-Note events at this point consist solely of a MIDI note number representing pitch,
-and a decimal from 0 to 1.0 representing amplitude at onset.
-In this first version of S4M-Cycles, note durations are not yet tracked.
+<p>The tracker component receives audio input, and outputs note events to the sequencer layer.
+Presently, note events consist only of a MIDI note number representing pitch,
+and a decimal from 0 to 1.0 representing amplitude at onset; note durations are not yet tracked.
 This decision was made for two reasons: to simplify the tracker layer during
 initial development, and to allow notes to be sent to the sequencer immediately
-on onset. Note duration in the sequencer is thus static, and the synthesizer
+on onset detection. Note duration in the sequencer is thus static, and the synthesizer
 patches were chosen around this, mimicking plucked strings.</p>
 <section id="audio-input-analysis">
 <h3>Audio Input &amp; Analysis<a class="headerlink" href="#audio-input-analysis" title="Link to this heading">¶</a></h3>
 <p>Audio is sent from Max to a csound6~ object, where it is analyzed and transformed
 into discrete pitch and amplitude messages, sent once per control pass.
 Csound uses a <em>control-rate</em>, in which <em>kspms</em> samples are handled per computation
-buffer and control signals (k-rate variables) are updated onceper <em>kspms</em> samples.
-In the csound6~ object, which I porte from Victor Lazzarini’s csoundapi~ object for
+buffer and control signals (k-rate variables) are updated once per <em>kspms</em> samples.
+In the csound6~ object, which I ported from Victor Lazzarini’s csoundapi~ object for
 Pure Data, this rate must be an even divisor of the Max signal vector size.</p>
 <p>The ksmp rate in Csound also affects audio analysis: a larger ksmp value provides
 a larger bin for analysis at the cost of increased latency. Empirically,
 I found a ksmp of 16 running with a Max signal vector size of 32 to strike a
 good balance of pitch and amplitude estimation accuracy versus latency.</p>
-<p>The csound instruments send messages consisting of the output frequency in
+<p>The Csound instruments send messages consisting of the output frequency in
 cycles-per-second and output amplitude in RMS amplitude converted to decibels.
 These are sent once per ksmp, interpolated into Scheme s-expressions using
 Max message interpolations, and sent to the Scheme instance handling note tracking.</p>
 <a class="reference internal image-reference" href="_images/tracker-component.png"><img alt="_images/tracker-component.png" height="360" src="_images/tracker-component.png" width="356" />
 </a>
-<p>The csound code consists of two always-on instruments, one for frequency and the other
+<p>The Csound code consists of two always-on instruments, one for frequency and the other
 for amplitude. After experimenting with the various Csound pitch tracking opcodes,
 I found the best method for soprano saxophone was the <strong>pitchamdf</strong> opcode,
 which uses the Average Magnitude Difference Function, and is documented in the manual
@@ -79,41 +78,41 @@ as being appropriate for real-time tracking of monophonic signals.</p>
 <section id="conversion-to-note-events">
 <h3>Conversion to Note Events<a class="headerlink" href="#conversion-to-note-events" title="Link to this heading">¶</a></h3>
 <p>The signals detailed above are sent as Scheme function calls into the Scheme program for
-converting to note events. This is a work in progress and currently does not handle new
+converting to note events. This is a work in progress and currently does not handle
 legato notes, an area I intend to improve.</p>
-<p>The algorithm in the Scheme program is as follows:</p>
+<p>The note parsing algorithm in the Scheme program is roughly as follows:</p>
 <ul class="simple">
-<li><p>incoming db and cps values are each handled in their own listener functions, with
+<li><p>Incoming db and cps values are each handled in their own listener functions, with
 each function receiving a value once per ksmp (i.e., at control rate)</p></li>
-<li><p>previous values for each are saved in global variables for comparing to the previous ksmp</p></li>
-<li><p>user configured values are set for db-delta, db-threshold and debounce time in ksmps</p></li>
+<li><p>Previous values for each are saved in global variables for comparison to the current value</p></li>
+<li><p>User-configured values are set for db-delta, db-threshold, and debounce time in ksmps</p></li>
 <li><dl class="simple">
-<dt>a new onset is considered to have occured if:</dt><dd><ul>
-<li><p>the current db value exceeds the db-threshold</p></li>
-<li><p>the current db value is greater than the previous by db-delta or more</p></li>
-<li><p>no previous onset has occured in the previous debounce number of ksmps</p></li>
+<dt>A new onset is considered to have occurred if:</dt><dd><ul>
+<li><p>The current db value exceeds the db-threshold</p></li>
+<li><p>The current db value is greater than the previous by db-delta or more</p></li>
+<li><p>No previous onset has occurred in the previous debounce number of ksmps</p></li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>on a new onset, the following occurs:</dt><dd><ul>
-<li><p>the next <strong>onset-wait</strong> ksmps are ignored so that noisy attacks are not used</p></li>
-<li><p>the next <strong>frq-buf-size</strong> cps values are stored in a circular buffer (in use, 5 to 7)</p></li>
-<li><p>simultaneously, the next <strong>db-buf-size</strong> values are stored in a circular buffer</p></li>
+<dt>On a new onset, the following occurs:</dt><dd><ul>
+<li><p>The next <strong>onset-wait</strong> ksmps are ignored so that pitch values during noisy attacks are ignored</p></li>
+<li><p>The next <strong>frq-buf-size</strong> cps values are stored in a circular buffer (in use, 5 to 7)</p></li>
+<li><p>Simultaneously, the next <strong>db-buf-size</strong> values are stored in a circular buffer</p></li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>when an onset is detected and the two buffers have been filled:</dt><dd><ul>
-<li><p>the frequency buffer contents are sorted numerically and the median value used as the value that is converted to nearest MIDI note number and used as the detected pitch</p></li>
-<li><p>the db buffers mean db value is calculated and converted to an amplitude value, using the configurable values for <strong>dbs-ceiling</strong> and <strong>dbs-floor</strong> as scaling values</p></li>
+<dt>After an onset is detected and the two buffers have been filled:</dt><dd><ul>
+<li><p>The frequency buffer contents are sorted numerically, and the median value is used as the value that is converted to the nearest MIDI note number and used as the detected pitch</p></li>
+<li><p>The db buffers mean db value is calculated and converted to a normalized amplitude value, using the configurable values for <strong>dbs-ceiling</strong> and <strong>dbs-floor</strong> as scaling values</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p>the calculated onset values for MIDI note number and amplitude are then sent out the tracker S4M instance, displayed in the Max patch (for debugging) and sent to the sequencing instance.</p></li>
+<li><p>The calculated onset values for MIDI note number and amplitude are then sent out to the tracker S4M instance, displayed in the Max patch, and sent to the sequencing S4M instance</p></li>
 </ul>
 </section>
 </section>
@@ -121,103 +120,107 @@ each function receiving a value once per ksmp (i.e., at control rate)</p></li>
 <h2>Sequencer<a class="headerlink" href="#sequencer" title="Link to this heading">¶</a></h2>
 <p>The sequencer layer consists of four looping sequencers that clock off an incoming Max message sent
 from a metro object every X ticks, where X is user configurable, and ticks is Max ticks at 480 PPQ.
-Values from 1 to 4 provide an high degree of accuracy and appear to perform adequately.</p>
+Values from 1 to 4 provide a high degree of accuracy and appear to perform adequately.</p>
 <p>The sequence objects store notes in a hash-table (the Lisp equivalent of a Python dictionary),
 keyed by tick time within a master loop length set in beats.
-Values stored are themselves hash-tables, allowing the sequencer to store arbitrary numbers of fields.
-This is used to store meta-data such as initiating take-number, note repetition number, and note probability,
-in addition to the values for pitch, amplitude, and duration. (As explained earlier, duration is
+Values stored are themselves hash-tables, allowing the sequencer to store arbitrary numbers of fields per note,
+which can act as inputs to the transformation algorithms or sources for modulation data to the output sounds.
+This is used to store metadata such as initiating take-number, note repetition number, and note probability,
+in addition to the values for pitch, amplitude, and duration. Duration is
 a static, user-configurable value set in each sequencer, and thus is not related to the length of
 the note on the saxophone.</p>
-<p>Each synthesizer track (four in my performance) has its own sequencer object, where each sequencer
-maybe be set to a separate loop length in beats. The global tempo of the sequencers
-may be changed by changing the tempo of the Max clock source in the containing Max patch.</p>
+<p>Each synthesizer track has its own sequencer object, where each sequencer
+may be set to a separate loop length in beats. The global tempo of the sequencers
+may be changed by changing the tempo of the Max clock source in the containing Max patch.
+In the recorded performance, there are four monophonic sequencer tracks playing, all set to
+use a four bar loop length.</p>
 <p>Because notes are stored at absolute tick values (rather than every quantized sixteenth note as with a
-step sequencer), notes may be stored very close together causing smearing. To prevent this, the
-sequencer has a user configurable “blast radius” of a certain number of ticks.
-When a note is added to a sequencer, any notes on either side within this blast radius are erased.
+step sequencer), notes may be stored very close together, potentially causing smearing and clusters. To prevent this, the
+sequencer has a user-configurable “blast radius” of a certain number of ticks.
+When a note is added to a sequencer, any notes within this radius on either side are erased.
 This achieves the goal of having the sequencer be easy to manage (as with a monophonic step sequencer)
-while preserving micro-timing from the player.</p>
+while preserving micro-timing from the player and allowing overdubbing (both by the player and the algorithms).</p>
 <p>The sequencer has two additional unusual features that help achieve my goal
 of having the output not obviously sound like a looper:</p>
 <p>The first is that each note event has a <strong>reps</strong>
 attribute: after the note has played this many times, it is automatically erased from its sequence.
 This ensures that material captured is only heard for a certain amount of time, and spares the performer
-from having to explictly erase a track to make room. This value can be set on the fly, allowing the
+having to explicitly erase a track to make room. This value can be set on the fly, allowing the
 performer to add material that will continue for a long time or only appear briefly.
-(When a null value is used, the notes will play until explictly erased.)</p>
+When a null value is used for note reps, the notes will play until explicitly erased.</p>
 <p>Secondly, the sequencer has a <strong>note probability</strong> value set for each sequencer track, which can be
 set dynamically and, in my performance, was controlled by MIDI faders manipulated with my feet.
 This is applied to every note on a sequence, enabling me to thin out the texture dynamically
 and to draw sections to a close by closing the faders for the sequencers (i.e., probability of zero
 acting as a track mute).</p>
-<p>Finally, the sequencer can be recording in either overdub or replace mode. For this performance,
-I left them all in overdub, relying on the note lifecycles and note probablity to provide me with
+<p>Finally, the sequencer can record in either overdub or replace mode. For this performance,
+I left them all in overdub, relying on the note lifecycles and note probability to provide me with
 enough variety.</p>
 </section>
 <section id="transformer">
 <h2>Transformer<a class="headerlink" href="#transformer" title="Link to this heading">¶</a></h2>
 <p>When the performer holds down the sustain pedal, note inputs from the tracker are captured in a
-take buffer in the Scheme program. This is a list of note events (pitch, amplitude) with their corresponding
-onset times in ticks relative to the main clock.
-When the performer releases the pedal, the take is considered done and ready from transformation.</p>
-<p>Once the take is recorded, its note events are run through a list of transformers.
-Transformations are handled by a library of transformer functions, with transformations implemented thus
+take buffer in the Scheme program.
+When the performer releases the pedal, the take is considered done and ready for transformation.</p>
+<p>Transformations are handled by a library of Scheme functions, with transformations implemented thus
 far for:</p>
 <ul class="simple">
-<li><p>transposition</p></li>
-<li><p>temporal inversion (retrograde)</p></li>
-<li><p>inversion at a pitch (reflection)</p></li>
-<li><p>time compression/expansion</p></li>
-<li><p>spaced repetitions</p></li>
-<li><p>randomization of likelihood of notes playing</p></li>
+<li><p>Transposition</p></li>
+<li><p>Temporal inversion (retrograde)</p></li>
+<li><p>Inversion at a pitch (reflection)</p></li>
+<li><p>Time compression/expansion</p></li>
+<li><p>Spaced repetitions</p></li>
+<li><p>Randomization of the probability of notes playing</p></li>
 </ul>
-<p>The main controller module maintains an active transformtiona list of transformers and arguments to them,
+<p>The main controller module maintains a list of active transformers and arguments to them,
 which can be updated from a Scheme function at any time. These can be called based on any kind of user input.</p>
-<p>Once of the goals of this version was to ensure that I could focus on improvising with the saxophone,
+<p>One of the goals of this version was to ensure that I could focus on improvising with the saxophone,
 with a minimum of hands-on operations necessary to ensure adequate variety and change.
-To achive this, I created banks of <strong>preset functions</strong>, where each preset
-consisted of a function that set the active transformer list, the number of repetitions for transformations
-being added to sequencers, the note rep value, and the note probability value.
-This ensures I can achieve highly varied results in different sections by calling a new preset function
+To achieve this, I created banks of presets, where each preset
+consisted of a function that set: the active transformer list, the number of repetitions for transformations
+being added to sequencers, the space between repetitions, and the note rep value.
+This enabled me to achieve highly varied results in different sections by calling a new preset function
 and by varying my use of the take pedal.</p>
-<p>In initial development, I had buttons choosing presets, however making decisions about the presets and
-taking my hands off the saxophone proved to be too much of an interuption to the improvisation process.
-The solution I used in this performance was to have the preset change automatically, triggered
-by the pedal release that marks the end of a take.</p>
-<p>Variety in transformation chains was achieved two ways:
-* On each take, the active preset was rotated round-robin through a bank of four presets.
-* An overall take counter was used to make the algorithms in the presets change depending on the take number.</p>
+<p>In initial development, I configured buttons to choose presets. However, making decisions about the presets and
+taking my hands off the saxophone proved to be too much of an interruption to the improvisation process.
+The solution I used in this performance was to have the preset change automatically once per take, cycling through various presets,
+with each change triggered by the pedal release that marks the end of a take.</p>
+<dl class="simple">
+<dt>Variety in transformation chains was achieved two ways:</dt><dd><ul class="simple">
+<li><p>On each take, the active preset was rotated round-robin through a bank of four presets.</p></li>
+<li><p>An overall take counter was used to make the algorithms in the presets change depending on the take number.</p></li>
+</ul>
+</dd>
+</dl>
 <p>This allowed me to start the performance with a thinner texture by having the note reps, probability,
-and take reps ramp up over the first 8 takes, all without requiring any additional input from me.</p>
+and take reps increase over the first 8 takes, all without requiring any additional input from me.</p>
 </section>
 <section id="controller">
 <h2>Controller<a class="headerlink" href="#controller" title="Link to this heading">¶</a></h2>
 <p>In addition to the various sequencer objects, the Scheme program consists of a substantial controller
-layer, with MIDI input, parsing, and routing handled with code that built on tools I built for
+layer, with MIDI input, parsing, and routing handled by code that builds on tools I created for
 previous projects. During prototyping, this included button controllers for choosing tracks, bars, and
 transformer chains, and buttons for running transformations and copying them into specific places
 in tracks, along with general operations for erasing tracks and choosing the record mode.
-While all of these worked well, and were productive for interactive composition, they proved too complicated
-for use in real time without negative effects on my improvisation.</p>
-<p>For the purpose of the concert, I reduced controller input to two input streams:</p>
-<ul class="simple">
-<li><p>The take pedal selecting the active algorithm preset</p></li>
-<li><p>A fader box for picking the note probability for each sequencer</p></li>
-</ul>
-<p>The fader box (a BCF-2000) has large, loose faders, allowing me to manipulate these with my feet
-without taking my hands off the saxophone. These were attached to the note probability, with the
-fader through range divided into 8 and the probability set as being between 0 out of 7 to 7 out of 7.
-Thus, with all faders up, the probability setting has no effect, and will a fader full down, the
+All of these worked well and provided typical sequencer operations that were productive for interactive composition, however,
+they proved too complicated for use in real time without negative effects on my saxophone improvisations.</p>
+<p>For the purpose of the concert, I thus reduced controller input to two input streams:
+the take pedal capturing audio and selecting the active algorithm preset, and the
+fader box for picking the note probability for each sequencer.
+The fader box (a BCF-2000) has large, loose faders, allowing me to manipulate these with my feet
+without taking my hands off the saxophone. The
+fader throw range was divided into 8, and the probability set as being between 0 out of 7 to 7 out of 7.
+Thus, with a fader all the way up, the probability setting has no effect, and with it fully down, the
 given line is muted. This approach gave me an effective way to thin out texture, and while moving
-faders with my foot while playing requires some practice, it was definitely doable.</p>
+faders with my foot while playing requires some practice, it was definitely possible,
+and presumably also interesting for the audience.</p>
 </section>
 <section id="output">
 <h2>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
 <p>The sequencers ultimately control sound by sending control volt and gate outputs to the modular
 synthesizer, using the Expert Sleepers digital audio to CV conversion modules and their accompanying
-Max objects. These are low level Max objects, thus it was necessary to make a Scheme layer to drive
-them from note abstractions was necessary.</p>
+Max objects. These are low-level Max objects, thus it was necessary to make a Scheme layer to drive
+them from note abstractions.</p>
 <p>As mentioned earlier, the duration of notes from the saxophone is not (currently) captured.
 Note durations are, at this point, simply set in each sequencer, with synthesizer sounds chosen
 that work with momentary notes, similar to plucked strings or percussive sounds.
