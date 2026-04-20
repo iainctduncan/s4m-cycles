@@ -98,7 +98,7 @@ each function receiving a value once per ksmp (i.e., at control rate)</p></li>
 <li><dl class="simple">
 <dt>On a new onset, the following occurs:</dt><dd><ul>
 <li><p>The next <strong>onset-wait</strong> ksmps are ignored so that pitch values during noisy attacks are ignored</p></li>
-<li><p>The next <strong>frq-buf-size</strong> cps values are stored in a circular buffer (in use, 5 to 7)</p></li>
+<li><p>Following the wait, the next <strong>frq-buf-size</strong> cps values are stored in a circular buffer (in use, 5 to 7)</p></li>
 <li><p>Simultaneously, the next <strong>db-buf-size</strong> values are stored in a circular buffer</p></li>
 </ul>
 </dd>

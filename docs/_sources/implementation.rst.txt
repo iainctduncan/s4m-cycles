@@ -57,7 +57,7 @@ The note parsing algorithm in the Scheme program is roughly as follows:
     * No previous onset has occurred in the previous debounce number of ksmps
 * On a new onset, the following occurs:
     * The next **onset-wait** ksmps are ignored so that pitch values during noisy attacks are ignored
-    * The next **frq-buf-size** cps values are stored in a circular buffer (in use, 5 to 7)
+    * Following the wait, the next **frq-buf-size** cps values are stored in a circular buffer (in use, 5 to 7)
     * Simultaneously, the next **db-buf-size** values are stored in a circular buffer 
 * After an onset is detected and the two buffers have been filled:
     * The frequency buffer contents are sorted numerically, and the median value is used as the value that is converted to the nearest MIDI note number and used as the detected pitch

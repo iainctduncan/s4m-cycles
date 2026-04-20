@@ -190,6 +190,6 @@ As an improvisor, I also felt engaged with, and excited by, the work more than I
 for projects where I provide a composition, but do not perform or improvise.
 
 I believe the continued development of the system and the addition of other performers
-will enable this to produce higher quality
-work, and that the results will be interesting to performers as well as audiences.
+will enable me to produce higher quality work with it
+and that the results will be interesting to performers as well as audiences.
 
